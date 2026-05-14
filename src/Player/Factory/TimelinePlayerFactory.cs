@@ -15,20 +15,13 @@ namespace ChangeTrace.Player.Factory;
 /// <remarks>
 /// <list type="bullet">
 /// <item>Builds player components: <see cref="VirtualClock"/>, <see cref="EventCursor"/>, <see cref="SeekableTimeline"/>, <see cref="PlaybackTransport"/>.</item>
-/// <item>Normalizes event timestamps using <see cref="TimelineNormalizer"/>.</item>
 /// <item>Configures initial playback mode, speed, and acceleration.</item>
 /// <item>Registered as singleton via <see cref="AutoRegisterAttribute"/> for DI.</item>
 /// </list>
 /// </remarks>
 [AutoRegister(ServiceLifetime.Singleton)]
-internal sealed class TimelinePlayerFactory : ITimelinePlayerFactory
+internal sealed class TimelinePlayerFactory(IDiagnosticsProvider diagnostics) : ITimelinePlayerFactory
 {
-    private readonly IDiagnosticsProvider _diagnostics;
-
-    public TimelinePlayerFactory(IDiagnosticsProvider diagnostics)
-    {
-        _diagnostics = diagnostics;
-    }
     /// <summary>
     /// Creates a new timeline player with all necessary components wired.
     /// </summary>
@@ -59,6 +52,6 @@ internal sealed class TimelinePlayerFactory : ITimelinePlayerFactory
         var seekable = new SeekableTimeline(clock, cursor, targetDuration);
 
         var transport = new PlaybackTransport();
-        return new TimelinePlayer(clock, cursor, seekable, transport, _diagnostics, mode);
+        return new TimelinePlayer(clock, cursor, seekable, transport, diagnostics, mode);
     }
 }
