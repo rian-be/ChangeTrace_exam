@@ -1,4 +1,5 @@
 using ChangeTrace.Player;
+using ChangeTrace.Rendering.Hud;
 using ChangeTrace.Rendering.Scene;
 using ChangeTrace.Rendering.States;
 

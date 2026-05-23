@@ -2,6 +2,7 @@ using ChangeTrace.Core.Timelines;
 using ChangeTrace.Player.Enums;
 using ChangeTrace.Player.Factory;
 using ChangeTrace.Rendering.Factory;
+using ChangeTrace.Rendering.Pipeline;
 
 namespace ChangeTrace.Rendering;
 
