@@ -24,7 +24,7 @@ internal sealed record FilePath : ValueObject
     /// </summary>
     /// <param name="value">Candidate path string</param>
     /// <returns>Result containing a validated <see cref="FilePath"/> or an error</returns>
-    public static Result<FilePath> Create(string value)
+    public static Result<FilePath> Create(string? value)
     {
         if (string.IsNullOrWhiteSpace(value))
             return Result<FilePath>.Failure("Path cannot be empty");
