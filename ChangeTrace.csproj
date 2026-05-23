@@ -15,7 +15,7 @@
         <PublishRepositoryUrl>false</PublishRepositoryUrl>
         
         <!-- Exclude tools folder -->
-        <DefaultItemExcludes>$(DefaultItemExcludes);tools/**</DefaultItemExcludes>
+        <DefaultItemExcludes>$(DefaultItemExcludes);Tools/**</DefaultItemExcludes>
     </PropertyGroup>
 
     <ItemGroup>
