@@ -1,0 +1,71 @@
+name-template: 'v$RESOLVED_VERSION'
+tag-template: 'v$RESOLVED_VERSION'
+
+category-template: '### $TITLE'
+no-changes-template: '- No changes.'
+sort-by: merged_at
+sort-direction: descending
+
+categories:
+  - title: 'Enhancements'
+    labels:
+      - enhancement
+  - title: 'Fixes'
+    labels:
+      - bug
+  - title: 'Tasks'
+    labels:
+      - task
+  - title: 'Architecture'
+    labels:
+      - Architecture
+  - title: 'Gpu'
+    labels:
+      - Gpu
+  - title: 'Layout'
+    labels:
+      - Layout
+  - title: 'Renderer'
+    labels:
+      - Renderer
+  - title: 'Tests'
+    labels:
+      - tests
+  - title: 'Documentation'
+    labels:
+      - documentation
+  - title: 'CI'
+    labels:
+      - ci
+  - title: 'Performance'
+    labels:
+      - Performance
+
+change-template: '- $TITLE @$AUTHOR (#$NUMBER)'
+change-title-escapes: '\<*_&'
+
+version-resolver:
+  major:
+    labels:
+      - breaking-change
+  minor:
+    labels:
+      - enhancement
+  patch:
+    labels:
+      - bug
+      - task
+      - Architecture
+      - Gpu
+      - Layout
+      - Renderer
+      - Performance
+      - documentation
+      - ci
+      - tests
+  default: patch
+
+template: |
+  ## Changes
+
+  $CHANGES
