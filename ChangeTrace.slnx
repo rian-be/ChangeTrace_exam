@@ -1,4 +1,5 @@
 <Solution>
   <Project Path="ChangeTrace.csproj" />
+  <Project Path="Benchmarks/ChangeTrace.Benchmarks.csproj" />
   <Project Path="Tools/ChangeTrace.Tools.csproj" />
 </Solution>
