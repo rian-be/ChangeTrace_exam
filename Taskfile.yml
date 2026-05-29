@@ -30,6 +30,11 @@ tasks:
       - dotnet build {{.TOOLS_PROJECT}} -c Release --no-restore
       - dotnet run --project {{.TOOLS_PROJECT}} -- assets validate
 
+  benchmark:
+    desc: Run CPU-side render pipeline benchmarks
+    cmds:
+      - dotnet run -c Release --project Benchmarks/ChangeTrace.Benchmarks.csproj -- --filter "*Rendering*"
+
   assets:atlas:
     desc: Rebuild the language icon atlas
     cmds:
