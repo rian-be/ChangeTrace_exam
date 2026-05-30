@@ -2,16 +2,38 @@ name-template: 'v$RESOLVED_VERSION'
 tag-template: 'v$RESOLVED_VERSION'
 
 categories:
+  - title: 'Breaking Changes'
     labels:
+      - breaking-change
+  - title: 'Features'
+    labels:
+      - enhancement
+  - title: 'Architecture'
+    labels:
+      - Architecture
+  - title: 'Rendering'
+    labels:
+      - Renderer
+      - Gpu
+      - Layout
+  - title: 'Performance'
+    labels:
+      - Performance
+  - title: 'Bug Fixes'
     labels:
       - bug
-    labels:
-    labels:
+  - title: 'Tests'
     labels:
       - tests
+  - title: 'Documentation'
     labels:
+      - documentation
+  - title: 'CI'
     labels:
       - ci
+  - title: 'Tasks'
+    labels:
+      - task
 
 change-title-escapes: '\<*_&'
 
@@ -21,6 +43,12 @@ version-resolver:
       - breaking-change
   minor:
     labels:
+      - enhancement
+      - Architecture
+      - Renderer
+      - Gpu
+      - Layout
+      - Performance
   patch:
     labels:
       - bug

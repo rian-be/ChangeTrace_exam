@@ -1,5 +1,6 @@
 using System.CommandLine;
 using ChangeTrace.Cli.Interfaces;
+using ChangeTrace.Cli.Prompts;
 using ChangeTrace.Configuration.Discovery;
 using ChangeTrace.CredentialTrace.Interfaces;
 using ChangeTrace.CredentialTrace.Profiles;
@@ -23,7 +24,8 @@ namespace ChangeTrace.Cli.Handlers.Profiles.Organizations;
 /// </remarks>
 [AutoRegister(ServiceLifetime.Transient, typeof(OrgListCommandHandler))]
 internal sealed class OrgListCommandHandler(
-    IProfileStore<OrganizationProfile> store) : ICliHandler
+    IProfileStore<OrganizationProfile> store,
+    IEnumerable<IAuthProvider> providers) : ICliHandler
 {
     /// <summary>
     /// Executes 'org list' command asynchronously.
@@ -35,10 +37,10 @@ internal sealed class OrgListCommandHandler(
         var provider = parseResult.GetValue<string>("--provider");
 
         if (string.IsNullOrWhiteSpace(provider))
-        {
-            AnsiConsole.MarkupLine("[red]Error:[/] --provider is required.");
+            provider = ProviderPrompt.SelectProvider(providers);
+
+        if (string.IsNullOrWhiteSpace(provider))
             return;
-        }
 
         try
         {
@@ -47,9 +49,7 @@ internal sealed class OrgListCommandHandler(
                 .SpinnerStyle(Style.Parse("blue"))
                 .StartAsync("Loading organizations...", async _ =>
                 {
-                    var filtered = (await store.GetAllAsync(ct))
-                        .Where(o => o.Provider.Equals(provider, StringComparison.OrdinalIgnoreCase))
-                        .ToList();
+                    var filtered = await GetOrganizationsAsync(provider, ct);
 
                     if (!filtered.Any())
                     {
@@ -57,15 +57,7 @@ internal sealed class OrgListCommandHandler(
                         return;
                     }
 
-                    var table = new Table { Border = TableBorder.Rounded };
-                    table.AddColumn("Name");
-                    table.AddColumn("Provider");
-
-                    foreach (var org in filtered)
-                        table.AddRow(org.Name, org.Provider);
-
-                    AnsiConsole.Write(table);
-
+                    DisplayOrganizations(filtered);
                     DisplayConfirmation(filtered.Count, provider);
                 });
         }
@@ -73,6 +65,28 @@ internal sealed class OrgListCommandHandler(
         {
             AnsiConsole.MarkupLine($"[red]Failed to list organizations: {ex.Message}[/]");
         }
+    }
+
+    /// <summary>
+    /// Gets organizations matching provider.
+    /// </summary>
+    private async Task<List<OrganizationProfile>> GetOrganizationsAsync(
+        string provider,
+        CancellationToken ct) => [.. (await store.GetAllAsync(ct)).Where(o => o.Provider.Equals(provider, StringComparison.OrdinalIgnoreCase))];
+
+    /// <summary>
+    /// Displays organizations table.
+    /// </summary>
+    private static void DisplayOrganizations(IEnumerable<OrganizationProfile> organizations)
+    {
+        var table = new Table { Border = TableBorder.Rounded };
+        table.AddColumn("Name");
+        table.AddColumn("Provider");
+
+        foreach (var org in organizations)
+            table.AddRow(org.Name, org.Provider);
+
+        AnsiConsole.Write(table);
     }
 
     /// <summary>
