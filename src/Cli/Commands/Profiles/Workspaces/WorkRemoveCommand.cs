@@ -15,7 +15,7 @@ namespace ChangeTrace.Cli.Commands.Profiles.Workspaces;
 /// <item>Child command of <see cref="WorkCommand"/>.</item>
 /// <item>Execution handled by <see cref="WorkRemoveCommandHandler"/>.</item>
 /// <item>Requires workspace name argument.</item>
-/// <item>Optionally specifies the organization using <c>--org</c> option.</item>
+/// <item>Requires the organization using <c>--org</c> option.</item>
 /// <item>Registered automatically as singleton via <see cref="AutoRegisterAttribute"/>.</item>
 /// </list>
 /// </remarks>
@@ -40,6 +40,7 @@ internal sealed class WorkRemoveCommand : ICliCommand
         new("remove", "Remove workspace")
         {
             new Argument<string>("name") { Description = "Workspace name" },
-            new Option<string>("--org") { Description = "Organization name" }
+            new Option<string>("--org") { Description = "Organization name", Required = true },
+            new Option<bool>("--yes", "-y") { Description = "Confirm removal without prompting" }
         };
 }

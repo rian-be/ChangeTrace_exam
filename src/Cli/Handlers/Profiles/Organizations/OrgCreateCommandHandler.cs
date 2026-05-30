@@ -1,9 +1,9 @@
 using System.CommandLine;
 using ChangeTrace.Cli.Interfaces;
+using ChangeTrace.Cli.Prompts;
 using ChangeTrace.Configuration.Discovery;
 using ChangeTrace.CredentialTrace.Interfaces;
 using ChangeTrace.CredentialTrace.Profiles;
-using ChangeTrace.CredentialTrace.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Spectre.Console;
 
@@ -23,7 +23,8 @@ namespace ChangeTrace.Cli.Handlers.Profiles.Organizations;
 [AutoRegister(ServiceLifetime.Transient, typeof(OrgCreateCommandHandler))]
 internal sealed class OrgCreateCommandHandler(
     IAuthService auth,
-    IProfileStore<OrganizationProfile> store) : ICliHandler
+    IProfileStore<OrganizationProfile> store,
+    IEnumerable<IAuthProvider> providers) : ICliHandler
 {
     /// <summary>
     /// Executes 'organization create' command asynchronously.
@@ -42,10 +43,10 @@ internal sealed class OrgCreateCommandHandler(
         }
 
         if (string.IsNullOrWhiteSpace(provider))
-        {
-            AnsiConsole.MarkupLine("[red]Error:[/] --provider is required.");
+            provider = ProviderPrompt.SelectProvider(providers);
+
+        if (string.IsNullOrWhiteSpace(provider))
             return;
-        }
 
         try
         {
@@ -54,19 +55,7 @@ internal sealed class OrgCreateCommandHandler(
                 .SpinnerStyle(Style.Parse("blue"))
                 .StartAsync($"Creating organization [bold]{name}[/]...", async ctx =>
                 {
-                    var session = await auth.FetchSession(provider, ct);
-
-                    var profile = new OrganizationProfile
-                    {
-                        Id = Ulid.NewUlid(),
-                        Name = name,
-                        Provider = provider,
-                        CreatedAt = DateTime.UtcNow,
-                        SessionId = session.Id
-                    };
-
-                    await store.SaveAsync(profile, ct);
-
+                    await CreateOrganizationAsync(name, provider, ct);
                     ctx.Status("Finalizing...");
                     await Task.Delay(150, ct);
                 });
@@ -77,6 +66,28 @@ internal sealed class OrgCreateCommandHandler(
         {
             AnsiConsole.MarkupLine($"[red] Failed to create organization: {ex.Message}[/]");
         }
+    }
+
+    /// <summary>
+    /// Creates and stores organization profile for provider.
+    /// </summary>
+    private async Task CreateOrganizationAsync(
+        string name,
+        string provider,
+        CancellationToken ct)
+    {
+        var session = await auth.FetchSession(provider, ct);
+
+        var profile = new OrganizationProfile
+        {
+            Id = Ulid.NewUlid(),
+            Name = name,
+            Provider = provider,
+            CreatedAt = DateTime.UtcNow,
+            SessionId = session.Id
+        };
+
+        await store.SaveAsync(profile, ct);
     }
 
     private static void DisplayConfirmation(string name, string provider)

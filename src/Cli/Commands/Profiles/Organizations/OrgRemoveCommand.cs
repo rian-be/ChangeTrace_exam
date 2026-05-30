@@ -38,6 +38,7 @@ internal sealed class OrgRemoveCommand : ICliCommand
     public Command Build() =>
         new("remove", "Remove an organization")
         {
-            new Argument<string>("name") { Description = "Organization name" }
+            new Argument<string>("name") { Description = "Organization name" },
+            new Option<bool>("--yes", "-y") { Description = "Confirm removal without prompting" }
         };
 }
