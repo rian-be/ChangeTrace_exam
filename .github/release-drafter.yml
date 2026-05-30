@@ -1,62 +1,142 @@
 name-template: 'v$RESOLVED_VERSION'
 tag-template: 'v$RESOLVED_VERSION'
+tag-prefix: 'v'
+version-template: '$MAJOR.$MINOR.$PATCH'
+
+sort-by: merged_at
+sort-direction: descending
+pull-request-limit: 100
+history-limit: 100
+
+no-changes-template: '- No changes.'
+no-contributors-template: 'No contributors.'
+category-template: '## $TITLE'
+change-template: '- [$TITLE]($URL) by @$AUTHOR'
+change-title-escapes: '\<*_&`#@'
+
+exclude-contributors:
+  - github-actions
+  - github-actions[bot]
+  - dependabot
+  - dependabot[bot]
 
 categories:
+  - type: pre-exclude
+    when:
+      labels:
+        - skip-changelog
+        - State One
+        - State Two
+
   - title: 'Breaking Changes'
-    labels:
-      - breaking-change
-  - title: 'Features'
-    labels:
-      - enhancement
-  - title: 'Architecture'
-    labels:
-      - Architecture
-  - title: 'Rendering'
-    labels:
-      - Renderer
-      - Gpu
-      - Layout
+    semver-increment: major
+    collapse-after: -1
+    exclusive: true
+    when:
+      label: breaking-change
+
+  - title: 'Enhancements'
+    semver-increment: minor
+    collapse-after: 10
+    exclusive: true
+    when:
+      label: enhancement
+
+  - title: 'Fixes'
+    semver-increment: patch
+    collapse-after: 10
+    exclusive: true
+    when:
+      label: bug
+
   - title: 'Performance'
-    labels:
-      - Performance
-  - title: 'Bug Fixes'
-    labels:
-      - bug
+    semver-increment: patch
+    collapse-after: 8
+    exclusive: true
+    when:
+      label: Performance
+
+  - title: 'Architecture'
+    semver-increment: patch
+    collapse-after: 8
+    exclusive: true
+    when:
+      label: Architecture
+
+  - title: 'Renderer'
+    semver-increment: patch
+    collapse-after: 8
+    exclusive: true
+    when:
+      label: Renderer
+
+  - title: 'Gpu'
+    semver-increment: patch
+    collapse-after: 8
+    exclusive: true
+    when:
+      label: Gpu
+
+  - title: 'Layout'
+    semver-increment: patch
+    collapse-after: 8
+    exclusive: true
+    when:
+      label: Layout
+
   - title: 'Tests'
-    labels:
-      - tests
+    semver-increment: patch
+    collapse-after: 8
+    exclusive: true
+    when:
+      label: tests
+
   - title: 'Documentation'
-    labels:
-      - documentation
+    semver-increment: patch
+    collapse-after: 8
+    exclusive: true
+    when:
+      label: documentation
+
   - title: 'CI'
-    labels:
-      - ci
+    semver-increment: patch
+    collapse-after: 8
+    exclusive: true
+    when:
+      label: ci
+
   - title: 'Tasks'
-    labels:
-      - task
+    semver-increment: patch
+    collapse-after: 8
+    exclusive: true
+    when:
+      label: task
 
-change-title-escapes: '\<*_&'
+  - title: 'Other Changes'
+    semver-increment: patch
+    collapse-after: 8
 
-version-resolver:
-  major:
-    labels:
-      - breaking-change
-  minor:
-    labels:
-      - enhancement
-      - Architecture
-      - Renderer
-      - Gpu
-      - Layout
-      - Performance
-  patch:
-    labels:
-      - bug
-      - ci
-      - tests
-  default: patch
+  - type: version-resolver
+    semver-increment: major
+    when:
+      label: breaking-change
+
+  - type: version-resolver
+    semver-increment: minor
+    when:
+      label: enhancement
+
+  - type: version-resolver
+    semver-increment: patch
 
 template: |
-  ## Changes
-
   $CHANGES
+
+footer: |
+  ## Contributors
+
+  $CONTRIBUTORS
+
+  ## Links
+
+  - Full changelog: https://github.com/$OWNER/$REPOSITORY/compare/$PREVIOUS_TAG...v$RESOLVED_VERSION
