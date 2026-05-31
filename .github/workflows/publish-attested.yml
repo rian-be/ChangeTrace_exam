@@ -2,12 +2,60 @@ name: Publish Attested
 
 on:
   workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag to receive published artifacts, for example v1.0.0"
+        required: true
+        type: string
+      prerelease:
+        description: "Mark the release as a prerelease"
+        required: false
+        default: false
+        type: boolean
 
 permissions:
-  contents: read
+  contents: write
   id-token: write
   attestations: write
 
 jobs:
   publish:
     uses: ./.github/workflows/publish-artifacts.yml
+
+  release:
+    name: Upload artifacts to release
+    runs-on: ubuntu-latest
+    needs: publish
+
+    steps:
+      - name: Download published artifacts
+        uses: actions/download-artifact@v6
+        with:
+          pattern: ChangeTrace-*
+          path: dist
+          merge-multiple: true
+
+      - name: Create or update release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.tag }}
+          PRERELEASE: ${{ inputs.prerelease }}
+        run: |
+          args=()
+
+          if [ "$PRERELEASE" = "true" ]; then
+            args+=(--prerelease)
+          fi
+
+          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            gh release edit "$RELEASE_TAG" \
+              --title "$RELEASE_TAG" \
+              "${args[@]}"
+          else
+            gh release create "$RELEASE_TAG" \
+              --title "$RELEASE_TAG" \
+              --notes "ChangeTrace $RELEASE_TAG" \
+              "${args[@]}"
+          fi
+
+          gh release upload "$RELEASE_TAG" dist/*.zip --clobber
