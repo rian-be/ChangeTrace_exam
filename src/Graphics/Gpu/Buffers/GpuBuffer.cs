@@ -55,6 +55,12 @@ internal sealed class GpuBuffer<T> : IDisposable where T : unmanaged
     /// </param>
     internal void UploadEmpty(int count, BufferUsageHint hint = BufferUsageHint.DynamicDraw)
     {
+        if (count < 0)
+            throw new ArgumentOutOfRangeException(
+                nameof(count),
+                count,
+                "GPU buffer element count cannot be negative.");
+
         Bind();
         GL.BufferData(_target, count * Marshal.SizeOf<T>(), IntPtr.Zero, hint);
     }
