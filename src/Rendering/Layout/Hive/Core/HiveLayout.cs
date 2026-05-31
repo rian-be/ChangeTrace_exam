@@ -448,7 +448,7 @@ internal sealed class HiveLayout : ILayoutEngine
         return Math.Clamp(
             MathF.Max(fileRadius, directoryRadius) + weightRadius,
             160f,
-            1600f);
+            _options.MaxEstimatedDirectoryRadius);
     }
 
     /// <summary>
