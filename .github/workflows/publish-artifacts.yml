@@ -7,6 +7,7 @@ permissions:
   contents: read
   id-token: write
   attestations: write
+  artifact-metadata: write
 
 jobs:
   publish:
@@ -55,12 +56,20 @@ jobs:
             .
 
       - name: Generate artifact attestation
-        uses: actions/attest-build-provenance@v2
+        id: attest
+        uses: actions/attest@v4
         with:
           subject-path: dist/ChangeTrace-${{ matrix.runtime }}.zip
+
+      - name: Pack attestation bundle
+        run: |
+          cp "${{ steps.attest.outputs.bundle-path }}" \
+            dist/ChangeTrace-${{ matrix.runtime }}.sigstore.json
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: ChangeTrace-${{ matrix.runtime }}
-          path: dist/ChangeTrace-${{ matrix.runtime }}.zip
+          path: |
+            dist/ChangeTrace-${{ matrix.runtime }}.zip
+            dist/ChangeTrace-${{ matrix.runtime }}.sigstore.json
