@@ -8,15 +8,58 @@ on:
 permissions:
   contents: write
   pull-requests: read
+  id-token: write
+  attestations: write
+  artifact-metadata: write
 
 jobs:
   update-release-draft:
     runs-on: ubuntu-latest
+    outputs:
+      tag_name: ${{ steps.release_drafter.outputs.tag_name }}
+      html_url: ${{ steps.release_drafter.outputs.html_url }}
 
     steps:
       - name: Update release draft
+        id: release_drafter
         uses: release-drafter/release-drafter@v7
         with:
           config-name: release-drafter.yml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  publish:
+    needs: update-release-draft
+    uses: ./.github/workflows/publish-artifacts.yml
+
+  upload-release-assets:
+    name: Upload artifacts to release draft
+    runs-on: ubuntu-latest
+    needs:
+      - update-release-draft
+      - publish
+
+    steps:
+      - name: Download published artifacts
+        uses: actions/download-artifact@v6
+        with:
+          pattern: ChangeTrace-*
+          path: dist
+          merge-multiple: true
+
+      - name: Upload assets to Release Drafter draft
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ needs.update-release-draft.outputs.tag_name }}
+          RELEASE_URL: ${{ needs.update-release-draft.outputs.html_url }}
+        run: |
+          if [ -z "$RELEASE_TAG" ]; then
+            echo "Release Drafter did not return a tag name."
+            exit 1
+          fi
+
+          echo "Uploading assets to $RELEASE_TAG"
+          echo "$RELEASE_URL"
+
+          gh release upload "$RELEASE_TAG" dist/* --clobber --repo "$GH_REPO"
