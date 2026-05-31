@@ -1,0 +1,71 @@
+using System.Numerics;
+using ChangeTrace.Core.Models;
+
+namespace ChangeTrace.Rendering.Scene;
+
+/// <summary>
+/// Represents visual avatar of an actor in scenes.
+/// </summary>
+/// <remarks>
+/// <list type="bullet">
+/// <item>Tracks current and target position for interpolation.</item>
+/// <item>Maintains visual properties like <see cref="Color"/> and <see cref="Alpha"/>.</item>
+/// <item>Tracks <see cref="LastSeen"/> virtual time for activity-based effects.</item>
+/// <item><see cref="ActivityLevel"/> indicates recent activity (0 = idle, 1 = just moved) for glow/trail rendering.</item>
+/// </list>
+/// </remarks>
+internal sealed class ActorAvatar
+{
+    /// <summary>
+    /// Identifier of actors.
+    /// </summary>
+    internal ActorName Actor { get; }
+
+    /// <summary>
+    /// Current position of avatar in scene coordinates.
+    /// </summary>
+    internal Vec2 Position { get; set; }
+
+    /// <summary>
+    /// Target position used for smooth interpolation.
+    /// </summary>
+    internal Vec2 Target { get; set; }
+
+    /// <summary>
+    /// Visual color of avatar, deterministic from palette.
+    /// </summary>
+    internal Vector4 Color { get; }
+
+    /// <summary>
+    /// Transparency of avatar (1 = opaque, 0 = invisible).
+    /// </summary>
+    internal float Alpha { get; set; } = 1f;
+
+    /// <summary>
+    /// Virtual time of the last event associated with this actor.
+    /// </summary>
+    internal double LastSeen { get; set; }
+
+    /// <summary>
+    /// Activity level (0 = idle, 1 = just moved) used for glow/trail intensity.
+    /// </summary>
+    internal float ActivityLevel { get; set; }
+
+    /// <summary>
+    /// Identifier of node actor is currently interacting with.
+    /// </summary>
+    internal string? TargetNodeId { get; set; }
+
+    /// <summary>
+    /// Initializes new <see cref="ActorAvatar"/>.
+    /// </summary>
+    /// <param name="actor">Actor identifier.</param>
+    /// <param name="spawnPosition">Initial position in scenes.</param>
+    /// <param name="color">Deterministic color from palette.</param>
+    internal ActorAvatar(ActorName actor, Vec2 spawnPosition, Vector4 color)
+    {
+        Actor = actor;
+        Position = Target = spawnPosition;
+        Color = color;
+    }
+}
