@@ -22,27 +22,30 @@ internal sealed class RenderingOptions
     /// <summary>
     /// Gets value indicating whether commit events should be rendered.
     /// </summary>
-    public bool RenderCommits => EnabledEvents.HasFlag(RenderEventKinds.Commit);
+    public bool RenderCommits => IsEnabled(RenderEventKinds.Commit);
 
     /// <summary>
     /// Gets value indicating whether branch events should be rendered.
     /// </summary>
-    public bool RenderBranches => EnabledEvents.HasFlag(RenderEventKinds.Branch);
+    public bool RenderBranches => IsEnabled(RenderEventKinds.Branch);
 
     /// <summary>
     /// Gets a value indicating whether merge events should be rendered.
     /// </summary>
-    public bool RenderMerges => EnabledEvents.HasFlag(RenderEventKinds.Merge);
+    public bool RenderMerges => IsEnabled(RenderEventKinds.Merge);
 
     /// <summary>
     /// Gets a value indicating whether file coupling events should be rendered.
     /// </summary>
-    public bool RenderFileCoupling => EnabledEvents.HasFlag(RenderEventKinds.FileCoupling);
+    public bool RenderFileCoupling => IsEnabled(RenderEventKinds.FileCoupling);
 
     /// <summary>
     /// Gets or sets the layout visualization mode.
     /// </summary>
     public LayoutMode Mode { get; set; } = LayoutMode.SingleTree;
+
+    private bool IsEnabled(RenderEventKinds kind) =>
+        (EnabledEvents & kind) == kind;
 }
 
 /// <summary>

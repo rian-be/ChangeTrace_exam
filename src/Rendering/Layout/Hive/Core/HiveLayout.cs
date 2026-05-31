@@ -285,7 +285,7 @@ internal sealed class HiveLayout : ILayoutEngine
             var angle = cursor + span * 0.5f;
 
             var radialOffset = MathF.Min(
-                280f,
+                _options.MaxSiblingRadialOffset,
                 MathF.Sqrt(_tree.GetWeight(directory.Id)) * 8f);
 
             var layerOffset = GetLayerOffset(i);
