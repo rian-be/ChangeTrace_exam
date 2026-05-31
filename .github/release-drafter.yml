@@ -5,8 +5,8 @@ version-template: '$MAJOR.$MINOR.$PATCH'
 
 sort-by: merged_at
 sort-direction: descending
-pull-request-limit: 100
-history-limit: 100
+pull-request-limit: 25
+history-limit: 25
 
 no-changes-template: '- No changes.'
 no-contributors-template: 'No contributors.'
