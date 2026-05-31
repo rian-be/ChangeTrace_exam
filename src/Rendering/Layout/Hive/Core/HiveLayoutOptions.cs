@@ -46,6 +46,11 @@ internal sealed record HiveLayoutOptions
     public float SiblingGap { get; init; } = 180f;
 
     /// <summary>
+    /// Maximum radial offset added to heavier sibling directory regions.
+    /// </summary>
+    public float MaxSiblingRadialOffset { get; init; } = 280f;
+
+    /// <summary>
     /// Target spacing between file nodes on a ring.
     /// </summary>
     public float FileSpacing { get; init; } = 68f;
