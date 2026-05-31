@@ -2,6 +2,8 @@ name-template: 'v$RESOLVED_VERSION'
 tag-template: 'v$RESOLVED_VERSION'
 tag-prefix: 'v'
 version-template: '$MAJOR.$MINOR.$PATCH'
+draft: true
+prerelease: false
 
 sort-by: merged_at
 sort-direction: descending
