@@ -129,7 +129,7 @@ internal sealed class TextGpuPipeline
         string? text,
         float scale)
     {
-        if (string.IsNullOrEmpty(text))
+        if (string.IsNullOrEmpty(text) || scale <= 0f)
             return 0f;
 
         return text.Length * GlyphW * scale;
@@ -140,6 +140,9 @@ internal sealed class TextGpuPipeline
     /// </summary>
     internal float MeasureHeight(float scale)
     {
+        if (scale <= 0f)
+            return 0f;
+
         return GlyphH * scale;
     }
 
@@ -151,7 +154,7 @@ internal sealed class TextGpuPipeline
         float scale,
         float maxWidth)
     {
-        if (string.IsNullOrEmpty(text))
+        if (string.IsNullOrEmpty(text) || scale <= 0f)
             return string.Empty;
 
         if (maxWidth <= 0f)
@@ -221,7 +224,7 @@ internal sealed class TextGpuPipeline
         Vector2 shadowOffset,
         bool flipY = false)
     {
-        if (string.IsNullOrEmpty(text))
+        if (string.IsNullOrEmpty(text) || scale <= 0f)
             return;
 
         DrawStringWithKind(
