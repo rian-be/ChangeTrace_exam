@@ -34,5 +34,5 @@ internal enum RenderEventKinds
     /// <summary>
     /// All primary render event kinds.
     /// </summary>
-    All = Commit | Branch | Merge
+    All = Commit | Branch | Merge | FileCoupling
 }
