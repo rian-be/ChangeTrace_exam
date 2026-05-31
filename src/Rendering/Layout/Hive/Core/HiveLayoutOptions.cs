@@ -21,6 +21,11 @@ internal sealed record HiveLayoutOptions
     public float MaxLayoutRadius { get; init; } = 4200f;
 
     /// <summary>
+    /// Maximum estimated radius reserved for a directory subtree before fitting.
+    /// </summary>
+    public float MaxEstimatedDirectoryRadius { get; init; } = 1600f;
+
+    /// <summary>
     /// Lowest scale allowed during layout fitting.
     /// </summary>
     public float MinFitScale { get; init; } = 0.02f;
