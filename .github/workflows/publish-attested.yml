@@ -2,17 +2,6 @@ name: Publish Attested
 
 on:
   workflow_dispatch:
-    inputs:
-      tag:
-        description: "Optional release tag override. Leave empty to use the latest draft release."
-        required: false
-        default: ""
-        type: string
-      prerelease:
-        description: "Mark the release as a prerelease"
-        required: false
-        default: false
-        type: boolean
   workflow_run:
     workflows: [ "Release Drafter" ]
     types: [ completed ]
@@ -45,40 +34,20 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
-          RELEASE_TAG: ${{ github.event.inputs.tag || '' }}
-          PRERELEASE: ${{ github.event.inputs.prerelease || 'false' }}
         run: |
-          release_tag="$RELEASE_TAG"
+          release_tag="$(gh api "repos/$GH_REPO/releases" \
+            --jq '[.[] | select(.draft == true)][0].tag_name')"
 
           if [ -z "$release_tag" ]; then
-            release_tag="$(gh api "repos/$GH_REPO/releases" \
-              --jq '[.[] | select(.draft == true)][0].tag_name')"
-          fi
-
-          if [ -z "$release_tag" ]; then
-            echo "No draft release found. Run Release Drafter first or provide a tag input."
+            echo "No draft release found. Release Drafter must create the draft before artifacts can be uploaded."
             exit 1
-          fi
-
-          args=()
-
-          if [ "$PRERELEASE" = "true" ]; then
-            args+=(--prerelease)
           fi
 
           if gh release view "$release_tag" --repo "$GH_REPO" >/dev/null 2>&1; then
             gh release edit "$release_tag" \
               --repo "$GH_REPO" \
               --draft=true \
-              --title "$release_tag" \
-              "${args[@]}"
-          else
-            gh release create "$release_tag" \
-              --repo "$GH_REPO" \
-              --draft \
-              --title "$release_tag" \
-              --notes "ChangeTrace $release_tag" \
-              "${args[@]}"
+              --title "$release_tag"
           fi
 
           gh release upload "$release_tag" dist/*.zip --clobber --repo "$GH_REPO"
