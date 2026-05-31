@@ -4,7 +4,7 @@ on:
   push:
     branches: [ main ]
     paths:
-      - .github/labels.yml
+      - .github/config/labels.yml
       - .github/workflows/labels-sync.yml
   workflow_dispatch:
 
@@ -23,5 +23,5 @@ jobs:
       - name: Sync repository labels
         uses: EndBug/label-sync@v2
         with:
-          config-file: .github/labels.yml
+          config-file: .github/config/labels.yml
           delete-other-labels: true

@@ -1,0 +1,13 @@
+name: Publish Attested
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+  attestations: write
+
+jobs:
+  publish:
+    uses: ./.github/workflows/publish-artifacts.yml
