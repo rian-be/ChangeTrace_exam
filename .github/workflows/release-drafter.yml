@@ -62,4 +62,6 @@ jobs:
           echo "Uploading assets to $RELEASE_TAG"
           echo "$RELEASE_URL"
 
+          gh release edit "$RELEASE_TAG" --draft=true --repo "$GH_REPO"
           gh release upload "$RELEASE_TAG" dist/* --clobber --repo "$GH_REPO"
+          gh release edit "$RELEASE_TAG" --draft=true --repo "$GH_REPO"
